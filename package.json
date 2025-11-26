@@ -1,0 +1,28 @@
+{
+    "name": "emerald-yield-simulator",
+    "version": "1.0.0",
+    "description": "Integrated net yield &amp; rental return simulator for Emerald Stay. Responsive UI, data-driven insights and an admin dashboard, powered by Node.js, Express, MongoDB &amp; Docker.",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon src/index.js",
+        "dev": "nodemon src/index.js",
+        "lint": "eslint ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "cookie-parser": "^1.4.7",
+        "dotenv": "^17.2.3",
+        "ejs": "^3.1.10",
+        "express": "^5.1.0",
+        "express-ejs-layouts": "^2.5.1",
+        "express-validator": "^7.3.1",
+        "mongoose": "^9.0.0"
+    },
+    "devDependencies": {
+        "eslint": "^9.39.1",
+        "nodemon": "^3.1.11"
+    }
+}

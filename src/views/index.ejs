@@ -1,0 +1,28 @@
+<div class="container py-5">
+    <header class="mb-4">
+        <h1 class="h3">Emerald Yield Simulator</h1>
+    </header>
+
+    <main>
+        <!-- Formulario inicial (más adelante le añadirás validaciones y envío POST) -->
+        <form id="sim-form" action="/simulate" method="post" novalidate>
+            <div class="mb-3">
+                <label class="form-label">Purchase price (€)</label>
+                <input name="purchasePrice" type="number" class="form-control" required min="1" step="0.01">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Monthly rent (€)</label>
+                <input name="monthlyRent" type="number" class="form-control" required min="0" step="0.01">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Annual rental fee (€)</label>
+                <input name="annualFee" type="number" class="form-control" required min="0" step="0.01">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Prospect email</label>
+                <input name="email" type="email" class="form-control" required>
+            </div>
+            <button class="btn btn-success" type="submit">Simulate</button>
+        </form>
+    </main>
+</div>
