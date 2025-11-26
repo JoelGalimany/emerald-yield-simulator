@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const expressLayouts = require('express-ejs-layouts');
 
 const indexRouter = require('./routes/index');
+const adminRouter = require('./routes/admin');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/', indexRouter);
+app.use('/admin', adminRouter);
 
 app.use((req, res) => {
     res.status(404).render('404', { title: 'Not found' });

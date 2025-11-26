@@ -1,0 +1,158 @@
+<div class="container py-5">
+    <header class="mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-2">Simulation Details</h1>
+                <p class="text-muted mb-0">Complete information about this simulation</p>
+            </div>
+            <div>
+                <a href="/admin/simulations" class="btn btn-outline-secondary">Back to List</a>
+                <a href="/" class="btn btn-outline-primary">New Simulation</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">Property Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">Purchase Price:</dt>
+                            <dd class="col-sm-7">
+                                <strong>€<%= simulation.purchasePrice.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></strong>
+                            </dd>
+
+                            <dt class="col-sm-5">Monthly Rent:</dt>
+                            <dd class="col-sm-7">
+                                €<%= simulation.monthlyRent.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                            </dd>
+
+                            <dt class="col-sm-5">Annual Fee:</dt>
+                            <dd class="col-sm-7">
+                                €<%= simulation.annualFee.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                            </dd>
+
+                            <dt class="col-sm-5">Prospect Email:</dt>
+                            <dd class="col-sm-7">
+                                <a href="mailto:<%= simulation.email %>"><%= simulation.email %></a>
+                            </dd>
+
+                            <dt class="col-sm-5">Created At:</dt>
+                            <dd class="col-sm-7">
+                                <%= new Date(simulation.createdAt).toLocaleString('es-ES', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) %>
+                            </dd>
+
+                            <dt class="col-sm-5">Simulation ID:</dt>
+                            <dd class="col-sm-7">
+                                <small class="text-muted font-monospace"><%= simulation._id %></small>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">Return Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th class="text-end">Net Monthly</th>
+                                        <th class="text-end">Annual Net</th>
+                                        <th class="text-end">ROI</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% simulation.results.forEach((result) => { 
+                                        const isNegativeROI = result.roi < 0;
+                                        const badgeColor = isNegativeROI ? 'danger' : (result.year === 1 ? 'success' : result.year === 2 ? 'info' : 'primary');
+                                    %>
+                                    <tr>
+                                        <td><strong>Year <%= result.year %></strong></td>
+                                        <td class="text-end <%= result.netMonthly < 0 ? 'text-danger' : '' %>">
+                                            €<%= result.netMonthly.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                        </td>
+                                        <td class="text-end <%= result.annualNet < 0 ? 'text-danger' : '' %>">
+                                            €<%= result.annualNet.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="badge bg-<%= badgeColor %>">
+                                                <%= result.roi.toFixed(2) %>%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">Detailed Year-by-Year Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <% simulation.results.forEach((result) => { %>
+                            <% 
+                            const isNegative = result.netMonthly < 0 || result.annualNet < 0;
+                            const borderColor = isNegative ? 'warning' : (result.year === 1 ? 'success' : result.year === 2 ? 'info' : 'primary');
+                            const bgColor = isNegative ? 'warning' : (result.year === 1 ? 'success' : result.year === 2 ? 'info' : 'primary');
+                            const textColor = isNegative ? 'text-dark' : 'text-white';
+                            %>
+                            <div class="col-md-4">
+                                <div class="card h-100 border-<%= borderColor %>">
+                                    <div class="card-header bg-<%= bgColor %> <%= textColor %>">
+                                        <h5 class="card-title mb-0">Year <%= result.year %></h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            <strong>Net Monthly Income:</strong><br>
+                                            <span class="h5 <%= result.netMonthly < 0 ? 'text-danger' : 'text-success' %>">
+                                                €<%= result.netMonthly.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                            </span>
+                                        </p>
+                                        <p class="card-text">
+                                            <strong>Annual Net Income:</strong><br>
+                                            <span class="h5 <%= result.annualNet < 0 ? 'text-danger' : '' %>">
+                                                €<%= result.annualNet.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                            </span>
+                                        </p>
+                                        <p class="card-text">
+                                            <strong>Return on Investment:</strong><br>
+                                            <span class="h5 <%= result.roi < 0 ? 'text-danger' : 'text-primary' %>">
+                                                <%= result.roi.toFixed(2) %>%
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
