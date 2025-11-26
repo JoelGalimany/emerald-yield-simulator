@@ -40,8 +40,28 @@ function formatNumber(value, locale = 'en-US', minDecimals = 2, maxDecimals = 2)
     }).format(value);
 }
 
+/**
+ * Formats a date with locale-specific formatting
+ * @param {Date|string} date - Date to format
+ * @param {string} locale - Locale string (default: 'en-US')
+ * @param {Object} options - Intl.DateTimeFormat options
+ * @returns {string} Formatted date string
+ */
+function formatDate(date, locale = 'en-US', options = {}) {
+    const defaultOptions = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    
+    return new Date(date).toLocaleString(locale, { ...defaultOptions, ...options });
+}
+
 module.exports = {
     roundCurrency,
     formatCurrency,
-    formatNumber
+    formatNumber,
+    formatDate
 };

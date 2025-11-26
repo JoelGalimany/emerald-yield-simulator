@@ -23,9 +23,17 @@ const VALIDATION_LIMITS = {
     PURCHASE_PRICE_MIN: 0.01
 };
 
+// Pagination defaults
+const PAGINATION = {
+    DEFAULT_PAGE: 1,
+    DEFAULT_LIMIT: 20,
+    MAX_LIMIT: 100
+};
+
 module.exports = {
     SIMULATION_DEFAULTS,
     COMMISSION_RATES,
-    VALIDATION_LIMITS
+    VALIDATION_LIMITS,
+    PAGINATION
 };
 
