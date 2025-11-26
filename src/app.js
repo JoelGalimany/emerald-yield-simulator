@@ -18,6 +18,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Helpers available to all views
+const { formatCurrency, formatNumber, formatDate } = require('./utils/helpers');
+const { SIMULATION_DEFAULTS } = require('./config/constants');
+app.locals.formatCurrency = formatCurrency;
+app.locals.formatNumber = formatNumber;
+app.locals.formatDate = formatDate;
+app.locals.locale = SIMULATION_DEFAULTS.LOCALE;
+app.locals.currency = SIMULATION_DEFAULTS.CURRENCY;
+
 app.use('/', indexRouter);
 app.use('/admin', adminRouter);
 
