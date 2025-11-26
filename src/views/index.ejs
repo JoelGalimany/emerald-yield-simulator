@@ -1,28 +1,130 @@
 <div class="container py-5">
     <header class="mb-4">
         <h1 class="h3">Emerald Yield Simulator</h1>
+        <p class="text-muted">Calculate the net monthly income and return over the first 3 years</p>
     </header>
 
     <main>
-        <!-- Formulario inicial (más adelante le añadirás validaciones y envío POST) -->
-        <form id="sim-form" action="/simulate" method="post" novalidate>
-            <div class="mb-3">
-                <label class="form-label">Purchase price (€)</label>
-                <input name="purchasePrice" type="number" class="form-control" required min="1" step="0.01">
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= error %>
+        </div>
+        <% } %>
+        
+        <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
+        <div class="alert alert-danger" role="alert">
+            <strong>Please correct the following errors:</strong>
+            <ul class="mb-0 mt-2">
+                <% errors.forEach((err) => { %>
+                <li><%= err.msg %></li>
+                <% }); %>
+            </ul>
+        </div>
+        <% } %>
+
+        <form id="sim-form" action="/simulate" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="purchasePrice" class="form-label">Purchase price (€) <span class="text-danger">*</span></label>
+                        <input 
+                            id="purchasePrice"
+                            name="purchasePrice" 
+                            type="number" 
+                            class="form-control <%= typeof errors !== 'undefined' && errors.find(e => e.path === 'purchasePrice') ? 'is-invalid' : '' %>" 
+                            required 
+                            min="0.01"
+                            step="0.01"
+                            placeholder="Enter property purchase price"
+                            title="Please enter a purchase price greater than 0"
+                            value="<%= typeof formData !== 'undefined' && formData.purchasePrice ? formData.purchasePrice : '' %>"
+                        >
+                        <% if (typeof errors !== 'undefined') { %>
+                            <% const error = errors.find(e => e.path === 'purchasePrice'); %>
+                            <% if (error) { %>
+                                <div class="invalid-feedback"><%= error.msg %></div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="monthlyRent" class="form-label">Monthly rent (€) <span class="text-danger">*</span></label>
+                        <input 
+                            id="monthlyRent"
+                            name="monthlyRent" 
+                            type="number" 
+                            class="form-control <%= typeof errors !== 'undefined' && errors.find(e => e.path === 'monthlyRent') ? 'is-invalid' : '' %>" 
+                            required 
+                            min="0"
+                            step="0.01"
+                            placeholder="Enter monthly rental amount"
+                            title="Please enter a monthly rent of 0 or greater"
+                            value="<%= typeof formData !== 'undefined' && formData.monthlyRent ? formData.monthlyRent : '' %>"
+                        >
+                        <% if (typeof errors !== 'undefined') { %>
+                            <% const error = errors.find(e => e.path === 'monthlyRent'); %>
+                            <% if (error) { %>
+                                <div class="invalid-feedback"><%= error.msg %></div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="annualFee" class="form-label">Annual rental fee (€) <span class="text-danger">*</span></label>
+                        <input 
+                            id="annualFee"
+                            name="annualFee" 
+                            type="number" 
+                            class="form-control <%= typeof errors !== 'undefined' && errors.find(e => e.path === 'annualFee') ? 'is-invalid' : '' %>" 
+                            required 
+                            min="0"
+                            step="0.01"
+                            placeholder="Enter annual rental fee"
+                            title="Please enter an annual fee of 0 or greater"
+                            value="<%= typeof formData !== 'undefined' && formData.annualFee ? formData.annualFee : '' %>"
+                        >
+                        <% if (typeof errors !== 'undefined') { %>
+                            <% const error = errors.find(e => e.path === 'annualFee'); %>
+                            <% if (error) { %>
+                                <div class="invalid-feedback"><%= error.msg %></div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Prospect email <span class="text-danger">*</span></label>
+                        <input 
+                            id="email"
+                            name="email" 
+                            type="email" 
+                            inputmode="email"
+                            class="form-control <%= typeof errors !== 'undefined' && errors.find(e => e.path === 'email') ? 'is-invalid' : '' %>" 
+                            required
+                            minlength="5"
+                            maxlength="254"
+                            placeholder="example@email.com"
+                            title="Please enter a valid email address with proper format (e.g., user@example.com). Must be between 5 and 254 characters."
+                            value="<%= typeof formData !== 'undefined' && formData.email ? formData.email : '' %>"
+                        >
+                        <% if (typeof errors !== 'undefined') { %>
+                            <% const error = errors.find(e => e.path === 'email'); %>
+                            <% if (error) { %>
+                                <div class="invalid-feedback"><%= error.msg %></div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
             </div>
             <div class="mb-3">
-                <label class="form-label">Monthly rent (€)</label>
-                <input name="monthlyRent" type="number" class="form-control" required min="0" step="0.01">
+                <button class="btn btn-success btn-lg" type="submit">
+                    <i class="bi bi-calculator"></i> Simulate
+                </button>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Annual rental fee (€)</label>
-                <input name="annualFee" type="number" class="form-control" required min="0" step="0.01">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Prospect email</label>
-                <input name="email" type="email" class="form-control" required>
-            </div>
-            <button class="btn btn-success" type="submit">Simulate</button>
         </form>
     </main>
 </div>

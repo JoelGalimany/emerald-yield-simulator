@@ -1,0 +1,65 @@
+<div class="container py-5">
+    <header class="mb-4">
+        <h1 class="h3 mb-3">Simulation Results</h1>
+        <div class="alert alert-info">
+            <strong>Email:</strong> <%= simulation.email %><br>
+            <strong>Purchase Price:</strong> €<%= simulation.purchasePrice.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %><br>
+            <strong>Monthly Rent:</strong> €<%= simulation.monthlyRent.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %><br>
+            <strong>Annual Fee:</strong> €<%= simulation.annualFee.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+        </div>
+    </header>
+
+    <main>
+        <h2 class="h4 mb-4">Return Analysis (First 3 Years)</h2>
+        
+        <% 
+        // Check if any year has negative net income
+        const hasNegativeIncome = simulation.results.some(r => r.netMonthly < 0 || r.annualNet < 0);
+        %>
+        <% if (hasNegativeIncome) { %>
+        <div class="alert alert-warning" role="alert">
+            <strong>Warning:</strong> This simulation shows negative net income in some years. This may occur in real-world scenarios such as property renovations, high maintenance costs, or long-term investment strategies. Please review the values carefully.
+        </div>
+        <% } %>
+        
+        <div class="row g-4 mb-4">
+            <% simulation.results.forEach((result) => { 
+                const isNegative = result.netMonthly < 0 || result.annualNet < 0;
+                const isNegativeROI = result.roi < 0;
+            %>
+            <div class="col-md-4">
+                <div class="card h-100 <%= isNegative ? 'border-warning' : '' %>">
+                    <div class="card-header <%= isNegative ? 'bg-warning text-dark' : 'bg-success text-white' %>">
+                        <h5 class="card-title mb-0">Year <%= result.year %></h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Net Monthly Income:</strong><br>
+                            <span class="h5 <%= result.netMonthly < 0 ? 'text-danger' : 'text-success' %>">
+                                €<%= result.netMonthly.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                            </span>
+                        </p>
+                        <p class="card-text">
+                            <strong>Annual Net Income:</strong><br>
+                            <span class="h5 <%= result.annualNet < 0 ? 'text-danger' : '' %>">
+                                €<%= result.annualNet.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                            </span>
+                        </p>
+                        <p class="card-text">
+                            <strong>Return on Investment (ROI):</strong><br>
+                            <span class="h5 <%= isNegativeROI ? 'text-danger' : 'text-primary' %>">
+                                <%= result.roi.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>%
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="/" class="btn btn-outline-primary">New Simulation</a>
+        </div>
+    </main>
+</div>
+
