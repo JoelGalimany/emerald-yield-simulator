@@ -25,8 +25,7 @@ const validateSimulation = [
         .trim()
         .notEmpty().withMessage('Email is required').bail()
         .isLength({ min: 5, max: 254 }).withMessage('Email must be between 5 and 254 characters').bail()
-        .isEmail().withMessage('Please provide a valid email address with proper format (e.g., user@example.com)').bail()
-        .withMessage('Please provide a valid email address with proper format (e.g., user@example.com)')
+        .isEmail().withMessage('Please provide a valid email address with proper format (e.g., user@example.com)')
         .normalizeEmail(),
 ];
 
@@ -56,11 +55,13 @@ async function processSimulation(req, res) {
             purchasePrice,
             monthlyRent,
             annualFee,
-            email: email.trim().toLowerCase(),
+            email: email.toLowerCase().trim(),
             results
         });
 
         await simulation.save();
+
+        const hasNegativeIncome = results.some(r => r.netMonthly < 0 || r.annualNet < 0);
 
         res.render('results', {
             title: 'Simulation Results',
@@ -68,12 +69,26 @@ async function processSimulation(req, res) {
                 purchasePrice,
                 monthlyRent,
                 annualFee,
-                email,
-                results
-            },
+                email: email.trim(),
+                results,
+                hasNegativeIncome
+            }
         });
     } catch (error) {
         console.error('Error processing simulation:', error);
+        
+        if (error.name === 'ValidationError') {
+            const formattedErrors = Object.values(error.errors).map(err => ({
+                path: err.path,
+                msg: err.message
+            }));
+            return res.render('index', {
+                title: 'Emerald Yield Simulator',
+                errors: formattedErrors,
+                formData: req.body
+            });
+        }
+
         res.render('index', {
             title: 'Emerald Yield Simulator',
             error: 'An error occurred while processing your simulation. Please try again.',

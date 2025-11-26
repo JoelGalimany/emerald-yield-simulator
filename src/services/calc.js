@@ -1,10 +1,5 @@
 const { roundCurrency } = require('../utils/helpers');
-
-const COMMISSION_RATES = {
-    YEAR_1: 0.30,
-    YEAR_2: 0.25,
-    DEFAULT: 0.20
-};
+const { COMMISSION_RATES } = require('../config/constants');
 
 /**
  * Calculates the net monthly income after agency commission and annual fees.
@@ -27,23 +22,36 @@ function netMonthlyIncome(monthlyRent, annualFee, year) {
 }
 
 /**
- * Calculates return (%) relative to the purchase price.
- * @param {number} purchasePrice - Purchase price of the property
- * @param {number} monthlyRent - Monthly rent
- * @param {number} annualFee - Annual expenses
- * @param {number} years - Number of years to simulate
- * @returns {Array} Array containing return data for each year
+ * Calculates return on investment (%) relative to the purchase price over multiple years.
+ * @param {number} purchasePrice - Purchase price of the property (must be > 0)
+ * @param {number} monthlyRent - Monthly rent (must be >= 0)
+ * @param {number} annualFee - Annual expenses (must be >= 0)
+ * @param {number} years - Number of years to simulate (default: 3)
+ * @returns {Array<Object>} Array containing return data for each year with structure:
+ *   { year: number, netMonthly: number, annualNet: number, roi: number }
+ * @throws {Error} If purchasePrice is invalid
  */
 function returnOverYears(purchasePrice, monthlyRent, annualFee, years = 3) {
-    const returns = [];
+    // Validate inputs
+    if (typeof purchasePrice !== 'number' || purchasePrice <= 0) {
+        throw new Error('Purchase price must be a positive number');
+    }
+    if (typeof monthlyRent !== 'number' || monthlyRent < 0) {
+        throw new Error('Monthly rent must be a non-negative number');
+    }
+    if (typeof annualFee !== 'number' || annualFee < 0) {
+        throw new Error('Annual fee must be a non-negative number');
+    }
+    if (typeof years !== 'number' || years < 1 || !Number.isInteger(years)) {
+        throw new Error('Years must be a positive integer');
+    }
 
-    // Avoid division by zero
-    if (!purchasePrice || purchasePrice <= 0) return returns;
+    const returns = [];
 
     for (let year = 1; year <= years; year++) {
         const netMonthly = netMonthlyIncome(monthlyRent, annualFee, year);
         const annualNet = netMonthly * 12;
-        const roi = (annualNet / purchasePrice) * 100;
+        const roi = purchasePrice > 0 ? (annualNet / purchasePrice) * 100 : 0;
 
         returns.push({
             year,
@@ -52,6 +60,7 @@ function returnOverYears(purchasePrice, monthlyRent, annualFee, years = 3) {
             roi: roundCurrency(roi)
         });
     }
+    
     return returns;
 }
 

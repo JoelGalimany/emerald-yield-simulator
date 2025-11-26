@@ -12,11 +12,7 @@
     <main>
         <h2 class="h4 mb-4">Return Analysis (First 3 Years)</h2>
         
-        <% 
-        // Check if any year has negative net income
-        const hasNegativeIncome = simulation.results.some(r => r.netMonthly < 0 || r.annualNet < 0);
-        %>
-        <% if (hasNegativeIncome) { %>
+        <% if (simulation.hasNegativeIncome) { %>
         <div class="alert alert-warning" role="alert">
             <strong>Warning:</strong> This simulation shows negative net income in some years. This may occur in real-world scenarios such as property renovations, high maintenance costs, or long-term investment strategies. Please review the values carefully.
         </div>
