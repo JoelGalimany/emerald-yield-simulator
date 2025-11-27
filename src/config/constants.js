@@ -30,10 +30,32 @@ const PAGINATION = {
     MAX_LIMIT: 100
 };
 
+// Dataset configuration
+const DATASET_CONFIG = {
+    // Google Drive file ID
+    GOOGLE_DRIVE_FILE_ID: '17zwQBXYvawGyM48jyVRSCrlXRubQ3Oa3',
+    getDownloadUrl: function() {
+        return `https://drive.google.com/uc?export=download&id=${this.GOOGLE_DRIVE_FILE_ID}`;
+    },
+    // Cache duration in milliseconds (24 hours)
+    CACHE_DURATION: 24 * 60 * 60 * 1000,
+    LOCAL_FILE_PATH: 'data/dataset.csv'
+};
+
+// Prediction configuration
+const PREDICTION_CONFIG = {
+    // Average days per month (365.25 / 12)
+    AVERAGE_DAYS_PER_MONTH: 30.42,
+    // Price margin for property segmentation (±15%)
+    PRICE_MARGIN: 0.15
+};
+
 module.exports = {
     SIMULATION_DEFAULTS,
     COMMISSION_RATES,
     VALIDATION_LIMITS,
-    PAGINATION
+    PAGINATION,
+    DATASET_CONFIG,
+    PREDICTION_CONFIG
 };
 

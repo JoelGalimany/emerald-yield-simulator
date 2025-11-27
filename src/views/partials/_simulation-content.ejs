@@ -1,0 +1,231 @@
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h2 class="mb-0">Property Information</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <strong class="text-muted d-block mb-1">Email</strong>
+                <span><%= simulation.email %></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong class="text-muted d-block mb-1">Purchase Price</strong>
+                <span><%= formatCurrency(simulation.purchasePrice, locale, currency) %></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong class="text-muted d-block mb-1">Monthly Rent</strong>
+                <span><%= formatCurrency(simulation.monthlyRent, locale, currency) %></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <strong class="text-muted d-block mb-1">Annual Fee</strong>
+                <span><%= formatCurrency(simulation.annualFee, locale, currency) %></span>
+            </div>
+            <% if (typeof simulation.createdAt !== 'undefined') { %>
+            <div class="col-md-6 mb-3">
+                <strong class="text-muted d-block mb-1">Created At</strong>
+                <span><%= formatDate(simulation.createdAt, locale, { month: 'long' }) %></span>
+            </div>
+            <% } %>
+            <% if (typeof simulation._id !== 'undefined') { %>
+            <div class="col-md-6 mb-3">
+                <strong class="text-muted d-block mb-1">Simulation ID</strong>
+                <span><small class="text-muted font-monospace"><%= simulation._id %></small></span>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Static Estimation Section -->
+<div class="section-header mb-4">
+    <h2>Static Estimation (First 3 Years)</h2>
+    <p class="text-muted">Calculation based on provided inputs with commission rates</p>
+</div>
+
+<% if (typeof hasNegativeIncome !== 'undefined' && hasNegativeIncome) { %>
+<div class="alert alert-warning" role="alert">
+    <strong>Warning:</strong> This simulation shows negative net income in some years. This may occur in real-world scenarios such as property renovations, high maintenance costs, or long-term investment strategies. Please review the values carefully.
+</div>
+<% } %>
+
+<div class="row g-4 mb-5">
+    <% simulation.results.forEach((result) => { 
+        const isNegative = result.netMonthly < 0 || result.annualNet < 0;
+        const isNegativeROI = result.roi < 0;
+    %>
+    <div class="col-md-4">
+        <div class="card h-100 <%= isNegative ? 'border-warning' : '' %>">
+            <div class="card-header <%= isNegative ? 'bg-warning text-dark' : 'bg-primary text-white' %>">
+                <h5 class="card-title mb-0">Year <%= result.year %></h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong class="text-muted d-block mb-1 small">Net Monthly Income</strong>
+                    <span class="<%= result.netMonthly < 0 ? 'text-danger' : 'text-primary' %>">
+                        <%= formatCurrency(result.netMonthly, locale, currency) %>
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <strong class="text-muted d-block mb-1 small">Annual Net Income</strong>
+                    <span class="<%= result.annualNet < 0 ? 'text-danger' : '' %>">
+                        <%= formatCurrency(result.annualNet, locale, currency) %>
+                    </span>
+                </div>
+                <div>
+                    <strong class="text-muted d-block mb-1 small">Return on Investment (ROI)</strong>
+                    <span class="<%= isNegativeROI ? 'text-danger' : 'text-primary' %>">
+                        <%= formatNumber(result.roi, locale) %>%
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</div>
+
+<!-- Data-Driven Prediction Section -->
+<% if (typeof predictions !== 'undefined' && predictions && typeof datasetStats !== 'undefined' && datasetStats.available) { 
+    // Get segmentation info from first prediction (same for all years)
+    const firstPrediction = predictions[0];
+    const usedSegmentation = firstPrediction && firstPrediction.usedSegmentation;
+    const filteredCount = firstPrediction ? firstPrediction.filteredCount : 0;
+    const totalCount = firstPrediction ? firstPrediction.totalCount : 0;
+    const segmentedAOR = firstPrediction ? firstPrediction.segmentedAOR : 0;
+    const globalAOR = firstPrediction ? firstPrediction.globalAOR : 0;
+%>
+<div class="section-header mb-4">
+    <h2>Data-Driven Prediction (First 3 Years)</h2>
+    <p class="text-muted">Prediction based on historical property data with price-based segmentation and occupancy rate adjustments</p>
+    <div class="alert alert-info mt-3 mb-0" role="alert">
+        <small>
+            <strong>Dataset Analysis:</strong> 
+            Total records: <%= totalCount.toLocaleString() %> | 
+            <% if (usedSegmentation && filteredCount > 0) { %>
+                <strong>Similar properties found:</strong> <%= filteredCount.toLocaleString() %> (price range ±15%) | 
+                <strong>Segmented Occupancy Rate:</strong> <%= (segmentedAOR * 100).toFixed(1) %>% 
+                <span class="text-muted">(vs Global: <%= (globalAOR * 100).toFixed(1) %>%)</span>
+            <% } else { %>
+                <strong>Using global occupancy rate:</strong> <%= (globalAOR * 100).toFixed(1) %>% 
+                <span class="text-muted">(no similar properties found in price range)</span>
+            <% } %>
+        </small>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <% predictions.forEach((prediction) => { 
+        const isNegative = prediction.netMonthly < 0 || prediction.annualNet < 0;
+        const isNegativeROI = prediction.roi < 0;
+    %>
+    <div class="col-md-4">
+        <div class="card h-100 border-info <%= isNegative ? 'border-warning' : '' %>">
+            <div class="card-header <%= isNegative ? 'bg-warning text-dark' : 'bg-primary text-white' %>">
+                <h5 class="card-title mb-0">Year <%= prediction.year %></h5>
+                <small class="d-block mt-1 opacity-75">
+                    Occupancy: <%= prediction.occupancyRate.toFixed(1) %>% 
+                    <span class="d-block">(~<%= prediction.bookedDaysPerMonth.toFixed(1) %> days booked/month)</span>
+                </small>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong class="text-muted d-block mb-1 small">Adjusted Monthly Rent</strong>
+                    <span class="small">
+                        <%= formatCurrency(prediction.adjustedMonthlyRent, locale, currency) %>
+                        <span class="d-block">(from <%= formatCurrency(simulation.monthlyRent, locale, currency) %>)</span>
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <strong class="text-muted d-block mb-1 small">Net Monthly Income</strong>
+                    <span class="<%= prediction.netMonthly < 0 ? 'text-danger' : '' %>">
+                        <%= formatCurrency(prediction.netMonthly, locale, currency) %>
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <strong class="text-muted d-block mb-1 small">Annual Net Income</strong>
+                    <span class="<%= prediction.annualNet < 0 ? 'text-danger' : '' %>">
+                        <%= formatCurrency(prediction.annualNet, locale, currency) %>
+                    </span>
+                    <small class="text-muted d-block mt-1">Based on <%= prediction.bookedDaysPerMonth.toFixed(1) %> booked days/month</small>
+                </div>
+                <div>
+                    <strong class="text-muted d-block mb-1 small">Return on Investment (ROI)</strong>
+                    <span class="<%= isNegativeROI ? 'text-danger' : 'text-primary' %>">
+                        <%= formatNumber(prediction.roi, locale) %>%
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</div>
+
+<!-- Comparison Section -->
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Comparison: Static vs Data-Driven</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th class="text-end">Static Annual Net</th>
+                        <th class="text-end">Data-Driven Annual Net</th>
+                        <th class="text-end">Difference</th>
+                        <th class="text-end">Static ROI</th>
+                        <th class="text-end">Data-Driven ROI</th>
+                        <th class="text-end">ROI Difference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% simulation.results.forEach((staticResult, index) => { 
+                        const prediction = predictions[index];
+                        const annualNetDifference = prediction ? (prediction.annualNet - staticResult.annualNet) : 0;
+                        const roiDifference = prediction ? (prediction.roi - staticResult.roi) : 0;
+                    %>
+                    <tr>
+                        <td><strong>Year <%= staticResult.year %></strong></td>
+                        <td class="text-end">
+                            <span class="<%= staticResult.annualNet < 0 ? 'text-danger' : '' %>">
+                                <%= formatCurrency(staticResult.annualNet, locale, currency) %>
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <span class="<%= prediction && prediction.annualNet < 0 ? 'text-danger' : '' %>">
+                                <%= prediction ? formatCurrency(prediction.annualNet, locale, currency) : 'N/A' %>
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <span class="<%= annualNetDifference < 0 ? 'text-danger' : annualNetDifference > 0 ? 'text-success' : '' %>">
+                                <%= annualNetDifference !== 0 ? (annualNetDifference > 0 ? '+' : '') + formatCurrency(annualNetDifference, locale, currency) : formatCurrency(0, locale, currency) %>
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <span class="<%= staticResult.roi < 0 ? 'text-danger' : '' %>">
+                                <%= formatNumber(staticResult.roi, locale) %>%
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <span class="<%= prediction && prediction.roi < 0 ? 'text-danger' : '' %>">
+                                <%= prediction ? formatNumber(prediction.roi, locale) + '%' : 'N/A' %>
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <span class="<%= roiDifference < 0 ? 'text-danger' : roiDifference > 0 ? 'text-success' : '' %>">
+                                <%= roiDifference !== 0 ? (roiDifference > 0 ? '+' : '') + formatNumber(roiDifference, locale) + '%' : '0%' %>
+                            </span>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<% } else { %>
+<div class="alert alert-warning" role="alert">
+    <strong>Note:</strong> Data-driven predictions are not available. The dataset file was not found or could not be loaded.
+</div>
+<% } %>
+

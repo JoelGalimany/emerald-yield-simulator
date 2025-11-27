@@ -5,6 +5,8 @@ const expressLayouts = require('express-ejs-layouts');
 
 const indexRouter = require('./routes/index');
 const adminRouter = require('./routes/admin');
+const errorHandler = require('./middleware/errorHandler');
+const { generalLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
@@ -17,6 +19,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+// General rate limiting to all routes
+app.use(generalLimiter);
 
 // Helpers available to all views
 const { formatCurrency, formatNumber, formatDate } = require('./utils/helpers');
@@ -33,5 +38,7 @@ app.use('/admin', adminRouter);
 app.use((req, res) => {
     res.status(404).render('404', { title: 'Not found' });
 });
+
+app.use(errorHandler);
 
 module.exports = app;
