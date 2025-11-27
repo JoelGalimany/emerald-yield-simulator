@@ -3,6 +3,7 @@ const path = require('path');
 const https = require('https');
 const { parse } = require('csv-parse/sync');
 const { DATASET_CONFIG } = require('../config/constants');
+const logger = require('../utils/logger');
 
 /**
  * Loads and parses the property dataset CSV file
@@ -12,20 +13,20 @@ const { DATASET_CONFIG } = require('../config/constants');
 function loadDataset(filePath) {
     try {
         if (!fs.existsSync(filePath)) {
-            console.warn(`Dataset file not found at ${filePath}`);
+            logger.warn(`Dataset file not found at ${filePath}`);
             return [];
         }
 
         const stats = fs.statSync(filePath);
         if (stats.size === 0) {
-            console.warn(`Dataset file is empty at ${filePath}`);
+            logger.warn(`Dataset file is empty at ${filePath}`);
             return [];
         }
 
         const fileContent = fs.readFileSync(filePath, 'utf-8');
         
         if (!fileContent || fileContent.trim().length === 0) {
-            console.warn(`Dataset file content is empty at ${filePath}`);
+            logger.warn(`Dataset file content is empty at ${filePath}`);
             return [];
         }
 
@@ -48,10 +49,10 @@ function loadDataset(filePath) {
             }
         });
 
-        console.log(`✓ Loaded ${records.length} records from dataset`);
+        logger.info(`Loaded ${records.length} records from dataset`);
         return records;
     } catch (error) {
-        console.error('Error loading dataset:', error);
+        logger.error('Error loading dataset', error);
         return [];
     }
 }
@@ -149,8 +150,8 @@ function downloadDataset(filePath) {
         const url = `https://drive.google.com/uc?export=download&id=${fileId}`;
         const file = fs.createWriteStream(filePath);
         
-        console.log(`Downloading dataset from Google Drive (File ID: ${fileId})...`);
-        console.log(`URL: ${url}`);
+        logger.info(`Downloading dataset from Google Drive (File ID: ${fileId})...`);
+        logger.debug(`URL: ${url}`);
         
         let downloadAttempts = 0;
         const maxAttempts = 3;
@@ -167,13 +168,13 @@ function downloadDataset(filePath) {
             }
             
             https.get(downloadUrl, (response) => {
-                console.log(`Response status: ${response.statusCode}, Content-Type: ${response.headers['content-type']}`);
+                logger.debug(`Response status: ${response.statusCode}, Content-Type: ${response.headers['content-type']}`);
                 
                 // Handle redirects
                 if (response.statusCode === 302 || response.statusCode === 301 || response.statusCode === 303) {
                     const redirectUrl = response.headers.location;
                     if (redirectUrl) {
-                        console.log(`Following redirect to: ${redirectUrl}`);
+                        logger.debug(`Following redirect to: ${redirectUrl}`);
                         const absoluteUrl = redirectUrl.startsWith('http') 
                             ? redirectUrl 
                             : `https://drive.google.com${redirectUrl}`;
@@ -183,7 +184,7 @@ function downloadDataset(filePath) {
                 
                 const contentType = response.headers['content-type'] || '';
                 if (contentType.includes('text/html')) {
-                    console.log('Received HTML response, parsing for download link...');
+                    logger.debug('Received HTML response, parsing for download link...');
                     let htmlData = '';
                     response.on('data', (chunk) => {
                         htmlData += chunk.toString();
@@ -203,20 +204,20 @@ function downloadDataset(filePath) {
                                 if (!actualDownloadUrl.startsWith('http')) {
                                     actualDownloadUrl = `https://drive.google.com${actualDownloadUrl}`;
                                 }
-                                console.log(`Found download link: ${actualDownloadUrl}`);
+                                logger.debug(`Found download link: ${actualDownloadUrl}`);
                                 return downloadFile(actualDownloadUrl, true);
                             }
                         }
                         
                         if (!isRetry) {
                             const confirmUrl = `${downloadUrl}&confirm=t`;
-                            console.log(`Trying with confirm parameter: ${confirmUrl}`);
+                            logger.debug(`Trying with confirm parameter: ${confirmUrl}`);
                             return downloadFile(confirmUrl, true);
                         }
                         
                         // Last resort: alternative download format
                         const altUrl = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=t`;
-                        console.log(`Trying alternative URL: ${altUrl}`);
+                        logger.debug(`Trying alternative URL: ${altUrl}`);
                         return downloadFile(altUrl, true);
                     });
                     return;
@@ -232,7 +233,7 @@ function downloadDataset(filePath) {
                 }
                 
                 if (!contentType.includes('text/csv') && !contentType.includes('text/plain') && !contentType.includes('application/octet-stream')) {
-                    console.warn(`Unexpected content type: ${contentType}`);
+                    logger.warn(`Unexpected content type: ${contentType}`);
                 }
                 
                 let totalBytes = 0;
@@ -245,7 +246,7 @@ function downloadDataset(filePath) {
                 file.on('finish', () => {
                     file.close();
                     const fileSize = fs.statSync(filePath).size;
-                    console.log(`Downloaded ${totalBytes} bytes, file size: ${fileSize} bytes`);
+                    logger.debug(`Downloaded ${totalBytes} bytes, file size: ${fileSize} bytes`);
                     
                     if (fileSize === 0) {
                         if (fs.existsSync(filePath)) {
@@ -265,20 +266,20 @@ function downloadDataset(filePath) {
                             return;
                         }
                     } catch (err) {
-                        console.warn('Could not verify CSV format:', err.message);
+                        logger.warn('Could not verify CSV format', err);
                     }
                     
-                    console.log(`✓ Dataset downloaded successfully (${(fileSize / 1024).toFixed(2)} KB) to ${filePath}`);
+                    logger.info(`Dataset downloaded successfully (${(fileSize / 1024).toFixed(2)} KB) to ${filePath}`);
                     resolve(true);
                 });
             }).on('error', (err) => {
                 if (fs.existsSync(filePath)) {
                     fs.unlinkSync(filePath);
                 }
-                console.error(`✗ Error downloading dataset (attempt ${downloadAttempts}/${maxAttempts}):`, err.message);
+                logger.error(`Error downloading dataset (attempt ${downloadAttempts}/${maxAttempts})`, err);
                 if (downloadAttempts < maxAttempts) {
                     setTimeout(() => {
-                        console.log(`Retrying download...`);
+                        logger.info(`Retrying download...`);
                         downloadFile(url, true);
                     }, 1000);
                 } else {
@@ -323,7 +324,7 @@ async function ensureDataset(filePath) {
     if (fs.existsSync(filePath)) {
         const stats = fs.statSync(filePath);
         if (stats.size === 0) {
-            console.warn(`Dataset file is empty, deleting and re-downloading...`);
+            logger.warn(`Dataset file is empty, deleting and re-downloading...`);
             fs.unlinkSync(filePath);
         }
     }
@@ -343,7 +344,7 @@ async function ensureDataset(filePath) {
             if (fs.existsSync(filePath)) {
                 const stats = fs.statSync(filePath);
                 if (stats.size > 0) {
-                    console.warn(`⚠ Using cached dataset (download failed: ${error.message})`);
+                    logger.warn(`Using cached dataset (download failed: ${error.message})`);
                     return filePath;
                 } else {
                     fs.unlinkSync(filePath);
@@ -367,7 +368,7 @@ async function getDatasetPath() {
         const finalPath = await ensureDataset(filePath);
         return finalPath;
     } catch (error) {
-        console.error('Error ensuring dataset:', error.message);
+        logger.error('Error ensuring dataset', error);
         const possiblePaths = [
             path.join(__dirname, '../../data/dataset.csv'),
             path.join(__dirname, '../../dataset.csv'),

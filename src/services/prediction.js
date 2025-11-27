@@ -1,6 +1,7 @@
 const { roundCurrency } = require('../utils/helpers');
 const { COMMISSION_RATES, PREDICTION_CONFIG } = require('../config/constants');
 const { loadDataset, calculateDatasetStats, filterDatasetByPrice, calculateSegmentedAOR, getDatasetPath, getDatasetPathSync } = require('./dataLoader');
+const logger = require('../utils/logger');
 
 let cachedStats = null;
 let cachedDataset = null;
@@ -22,7 +23,7 @@ async function getDatasetStats() {
             const datasetPath = await getDatasetPath();
             
             if (!datasetPath) {
-                console.warn('Dataset file not found. Data-driven predictions will be disabled.');
+                logger.warn('Dataset file not found. Data-driven predictions will be disabled.');
                 cachedStats = {
                     avgSurface: 0,
                     avgBedrooms: 0,
@@ -45,7 +46,7 @@ async function getDatasetStats() {
 
             return cachedStats;
         } catch (error) {
-            console.error('Error loading dataset stats:', error);
+            logger.error('Error loading dataset stats', error);
             cachedStats = {
                 avgSurface: 0,
                 avgBedrooms: 0,
@@ -255,15 +256,15 @@ async function predictReturnOverYears(purchasePrice, monthlyRent, annualFee, yea
  */
 async function initializeDataset() {
     try {
-        console.log('Initializing dataset...');
+        logger.info('Initializing dataset...');
         const stats = await getDatasetStats();
         if (stats.available && stats.totalProperties > 0) {
-            console.log(`✓ Dataset initialized successfully: ${stats.totalProperties} properties loaded`);
+            logger.info(`Dataset initialized successfully: ${stats.totalProperties} properties loaded`);
         } else {
-            console.warn('⚠ Dataset initialized but no data available. Data-driven predictions will be disabled.');
+            logger.warn('Dataset initialized but no data available. Data-driven predictions will be disabled.');
         }
     } catch (error) {
-        console.error('✗ Error initializing dataset:', error.message);
+        logger.error('Error initializing dataset', error);
     }
 }
 

@@ -49,5 +49,6 @@ const simulationSchema = new mongoose.Schema({
 });
 
 simulationSchema.index({ email: 1, createdAt: -1 });
+simulationSchema.index({ email: 1 });
 
 module.exports = mongoose.model('Simulation', simulationSchema);

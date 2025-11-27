@@ -1,30 +1,24 @@
 const Simulation = require('../models/Simulation');
-const { PAGINATION } = require('../config/constants');
-const { predictReturnOverYears, getDatasetStats } = require('../services/prediction');
-
-const { DEFAULT_PAGE, DEFAULT_LIMIT } = PAGINATION;
+const { getSimulationWithPredictions } = require('../services/simulationService');
+const asyncHandler = require('../middleware/asyncHandler');
 
 /**
  * Lists all simulations with pagination, filtering, and sorting
  * @param {Object} req - Express request object (with req.pagination and req.filters)
  * @param {Object} res - Express response object
  */
-async function listSimulations(req, res) {
-    try {
+const listSimulations = asyncHandler(async (req, res) => {
         const { page, limit, skip } = req.pagination;
         const { email, sortBy, sortOrder } = req.filters;
 
-        // Build query
         const query = {};
         if (email) {
-            query.email = { $regex: email, $options: 'i' }; // Case-insensitive search
+            query.email = { $regex: email, $options: 'i' };
         }
 
-        // Build sort object
         const sort = {};
         sort[sortBy] = sortOrder;
 
-        // Get total count and simulations in parallel for better performance
         const [total, simulations] = await Promise.all([
             Simulation.countDocuments(query),
             Simulation.find(query)
@@ -53,89 +47,27 @@ async function listSimulations(req, res) {
                 hasPrev: page > 1
             }
         });
-    } catch (error) {
-        console.error('Error listing simulations:', error);
-        res.render('admin/simulations', {
-            title: 'Admin - All Simulations',
-            error: 'An error occurred while loading simulations. Please try again later.',
-            simulations: [],
-            filters: {
-                email: '',
-                sortBy: 'createdAt',
-                sortOrder: 'desc'
-            },
-            pagination: {
-                currentPage: DEFAULT_PAGE,
-                totalPages: 0,
-                total: 0,
-                limit: DEFAULT_LIMIT,
-                hasNext: false,
-                hasPrev: false
-            }
-        });
-    }
-}
+});
 
 /**
  * Gets a single simulation by ID
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-async function getSimulation(req, res) {
-    try {
-        const { id } = req.params;
+const getSimulation = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-        // Validate MongoDB ObjectId format
-        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
-            return res.status(400).render('404', {
-                title: 'Invalid Simulation ID'
-            });
-        }
+    const { simulation, predictions, datasetStats, hasNegativeIncome } = 
+        await getSimulationWithPredictions(id);
 
-        const simulation = await Simulation.findById(id).lean();
-
-        if (!simulation) {
-            return res.status(404).render('404', {
-                title: 'Simulation Not Found',
-                message: 'The requested simulation could not be found.'
-            });
-        }
-
-        // Calculate data-driven predictions (same as results page)
-        const predictions = await predictReturnOverYears(
-            simulation.purchasePrice,
-            simulation.monthlyRent,
-            simulation.annualFee,
-            3
-        );
-        
-        const datasetStats = await getDatasetStats();
-        const hasNegativeIncome = simulation.results.some(r => r.netMonthly < 0 || r.annualNet < 0);
-
-        res.render('admin/simulation-detail', {
-            title: `Simulation Details - ${simulation.email}`,
-            simulation: simulation,
-            predictions: predictions,
-            datasetStats: datasetStats,
-            hasNegativeIncome: hasNegativeIncome
-        });
-    } catch (error) {
-        console.error('Error getting simulation:', error);
-        
-        // Handle specific MongoDB errors
-        if (error.name === 'CastError') {
-            return res.status(400).render('404', {
-                title: 'Invalid Simulation ID',
-                message: 'The provided simulation ID is not valid.'
-            });
-        }
-
-        res.status(500).render('404', {
-            title: 'Error',
-            message: 'An error occurred while loading the simulation. Please try again later.'
-        });
-    }
-}
+    res.render('admin/simulation-detail', {
+        title: `Simulation Details - ${simulation.email}`,
+        simulation: simulation,
+        predictions,
+        datasetStats,
+        hasNegativeIncome
+    });
+});
 
 module.exports = {
     listSimulations,
