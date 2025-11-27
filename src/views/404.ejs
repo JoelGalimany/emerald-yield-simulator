@@ -1,6 +1,9 @@
 <div class="container py-5">
     <header class="mb-4">
         <h1 class="h3">404 Not Found</h1>
-        <p class="text-muted">The page you are looking for does not exist.</p>
+        <p class="text-muted"><%= typeof error !== 'undefined' && error ? error : 'The page you are looking for does not exist.' %></p>
     </header>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <a href="/" class="btn btn-primary">Go to Home</a>
+    </div>
 </div>
