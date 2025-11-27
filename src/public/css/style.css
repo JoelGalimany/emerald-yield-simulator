@@ -1,64 +1,378 @@
 /* Emerald Yield Simulator - Custom Styles */
+/* Based on Emerald Stay visual identity */
 
-:root {
-    --emerald-primary: #2d8659;
-    --emerald-secondary: #1a5c3a;
-    --emerald-light: #e8f5e9;
+@font-face {
+    font-family: 'Louize';
+    src: url('../fonts/Louize-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
 }
 
+/* Custom variables */
+:root {
+    /* Custom spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+
+    /* Custom shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Aliases using Bootstrap theme variables */
+    --emerald-primary: var(--bs-primary);
+    --emerald-secondary: var(--bs-secondary);
+    --emerald-dark: var(--bs-dark);
+    --emerald-light: var(--bs-light);
+    --emerald-accent: var(--bs-primary);
+
+    --text-primary: var(--bs-body-color);
+    --text-secondary: var(--bs-secondary-color);
+
+    --bg-light: #f9fafb;
+    --border-color: var(--bs-border-color);
+}
+
+/* Global */
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Acumin', Arial, sans-serif;
+    color: var(--text-primary);
+    background-color: #ffffff;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    line-height: 1.6;
+    font-weight: 400;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Navbar styling */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: 'Louize', 'Times', serif;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+/* Navbar */
+
+.navbar {
+    background-color: #ffffff !important;
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-sm) 0;
+}
+
 .navbar-brand {
     color: var(--emerald-primary) !important;
-    font-weight: 600;
+    font-weight: 400;
+    font-size: 2.25rem;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.navbar-brand:hover {
+    color: var(--emerald-secondary) !important;
+}
+
+.navbar-brand,
+.nav-link {
+    font-family: 'Louize', 'Times', serif;
 }
 
 .nav-link {
-    color: #333 !important;
+    color: var(--text-primary) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.2s ease;
+    position: relative;
+    font-size: 15px;
+    line-height: 20px;
+    text-transform: uppercase;
 }
 
 .nav-link:hover {
     color: var(--emerald-primary) !important;
 }
 
-/* Form styling */
-.form-label {
-    font-weight: 500;
-    color: #333;
-}
-
-.btn-success {
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
     background-color: var(--emerald-primary);
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+}
+
+.nav-link:hover::after {
+    transform: scaleX(1);
+}
+
+/* Form styling */
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    border: 1.5px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.6875rem 1rem;
+    height: 48px;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.form-control:focus {
     border-color: var(--emerald-primary);
+    box-shadow: 0 0 0 3px rgba(0, 160, 98, 0.1);
+    outline: none;
 }
 
-.btn-success:hover {
-    background-color: var(--emerald-secondary);
-    border-color: var(--emerald-secondary);
+/* Buttons */
+
+.btn,
+button {
+    font-family: 'Louize', 'Times', serif;
+    text-transform: uppercase;
 }
 
-/* Card styling */
+/* Primary button */
+
+.btn-primary {
+    --bs-btn-bg: #00a062;
+    --bs-btn-border-color: #00a062;
+    --bs-btn-hover-bg: #00834f;
+    --bs-btn-hover-border-color: #00834f;
+    --bs-btn-active-bg: #006c40;
+    --bs-btn-active-border-color: #006c40;
+    --bs-btn-disabled-bg: #9be2c1;
+    --bs-btn-disabled-border-color: #9be2c1;
+
+    font-family: 'Louize', 'Times', serif;
+    font-weight: 500;
+    padding: 0.6875rem 2rem;
+    height: 48px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    line-height: 1.5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Button variants */
+
+.btn-outline-primary {
+    background-color: #ffffff !important;
+    border: 1px solid var(--emerald-primary) !important;
+    color: var(--emerald-primary) !important;
+    font-weight: 600;
+    padding: 0.6875rem 2rem;
+    height: 48px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    line-height: 1.5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: var(--emerald-primary) !important;
+    border-color: var(--emerald-primary) !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-secondary {
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.6875rem 2rem;
+    height: 48px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    line-height: 1.5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+    background-color: var(--emerald-primary) !important;
+    border-color: var(--emerald-primary) !important;
+    color: #ffffff !important;
+}
+
+/* Cards */
+
 .card {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-md);
     border: none;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .card-header {
     font-weight: 600;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
-/* Form validation styling - HTML5 native validation */
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Hero section */
+
+.hero-section {
+    background: linear-gradient(135deg, var(--emerald-light) 0%, #ffffff 100%);
+    padding: var(--spacing-xl) 0;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* Section headers */
+
+.section-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* Badge */
+
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+}
+
+/* Tables */
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    background-color: var(--bg-light);
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+    background-color: var(--bg-light);
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Pagination */
+
+.pagination .page-link {
+    color: var(--bs-primary);
+    border-color: var(--bs-border-color);
+}
+
+.pagination .page-link:hover {
+    color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+    border-color: var(--bs-primary);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: #ffffff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: var(--bs-secondary-color);
+    background-color: #ffffff;
+    border-color: var(--bs-border-color);
+    cursor: not-allowed;
+}
+
+/* Alerts */
+
+.alert {
+    border-radius: 4px;
+    border: none;
+    padding: 1rem 1.5rem;
+}
+
+.alert-info {
+    background-color: var(--emerald-light);
+    border-left: 4px solid var(--emerald-primary);
+}
+
+/* Form validation */
+
 form:not(.was-validated) input:invalid:not(:placeholder-shown) {
     border-color: #dc3545;
 }
 
-/* Show validation feedback on submit attempt */
 form.was-validated input:invalid {
     border-color: #dc3545;
     padding-right: calc(1.5em + 0.75rem);
@@ -77,17 +391,60 @@ form.was-validated input:valid {
     background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 
-/* Custom validation messages */
-input:invalid:not(:placeholder-shown) + .invalid-feedback,
-input:invalid:not(:placeholder-shown) ~ .invalid-feedback {
+input:invalid:not(:placeholder-shown)+.invalid-feedback,
+input:invalid:not(:placeholder-shown)~.invalid-feedback {
     display: block;
 }
 
-/* Responsive adjustments */
+/* Responsive */
+
 @media (max-width: 768px) {
+
+    .simulations-table thead th:first-child,
+    .simulations-table tbody td:first-child {
+        min-width: 120px;
+        width: 120px;
+        white-space: nowrap;
+    }
+
     .container {
-        padding-left: 15px;
-        padding-right: 15px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .btn-lg {
+        padding: 0.625rem 1.5rem;
+        font-size: 1rem;
     }
 }
 
+@media (max-width: 576px) {
+    .hero-section {
+        padding: var(--spacing-lg) 0;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .hero-title {
+        font-size: 1.75rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+}

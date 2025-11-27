@@ -1,12 +1,24 @@
-<div class="container py-5">
-    <header class="mb-4">
-        <div class="d-flex justify-content-between align-items-center">
+<!-- <div class="hero-section">
+    <div class="container">
+        <header class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h3 mb-2">All Simulations</h1>
+                <h1 class="hero-title mb-2">Admin Panel</h1>
+                <p class="hero-subtitle mb-0">Manage and analyze all property yield simulations</p>
             </div>
-            <a href="/" class="btn btn-outline-primary">New Simulation</a>
-        </div>
-    </header>
+            <a href="/" class="btn btn-primary">New Simulation</a>
+        </header>
+    </div>
+</div> -->
+<div class="hero-section">
+    <div class="container">
+        <header class="text-center mb-5">
+            <h1 class="hero-title">Admin Panel</h1>
+            <p class="hero-subtitle">Manage and analyze all property yield simulations</p>
+        </header>
+    </div>
+</div>
+
+<div class="container py-5">
 
     <main>
         <% if (typeof error !== 'undefined' && error) { %>
@@ -28,7 +40,7 @@
                     <% if (typeof filters !== 'undefined' && filters.sortOrder && filters.sortOrder !== 'desc') { %>
                     <input type="hidden" name="sortOrder" value="<%= filters.sortOrder %>">
                     <% } %>
-                    <div class="col-md-10">
+                    <div class="col-md-9 col-lg-10">
                         <label for="email" class="form-label">Filter by Email</label>
                         <input 
                             type="text" 
@@ -39,7 +51,7 @@
                             value="<%= typeof filters !== 'undefined' && filters.email ? filters.email : '' %>"
                         >
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
+                    <div class="col-md-3 col-lg-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">Search</button>
                     </div>
                     <% if (typeof filters !== 'undefined' && filters.email) { %>
@@ -65,10 +77,10 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover table-sm align-middle mb-0 simulations-table">
                         <thead class="table-light">
                             <tr>
-                                <th scope="col">
+                                <th scope="col" class="text-nowrap">
                                     <a href="?sortBy=createdAt&sortOrder=<%= typeof filters !== 'undefined' && filters.sortBy === 'createdAt' && filters.sortOrder === 'asc' ? 'desc' : 'asc' %><%= typeof filters !== 'undefined' && filters.email ? '&email=' + encodeURIComponent(filters.email) : '' %>" class="text-decoration-none text-dark">
                                         Date
                                         <% if (typeof filters !== 'undefined' && filters.sortBy === 'createdAt') { %>
@@ -117,7 +129,7 @@
                         <tbody>
                             <% simulations.forEach((sim) => { %>
                             <tr>
-                                <td>
+                                <td class="text-nowrap">
                                     <%= typeof formatDate !== 'undefined' ? formatDate(sim.createdAt, locale) : new Date(sim.createdAt).toLocaleString(locale || 'en-US') %>
                                 </td>
                                 <td><%= sim.email %></td>
@@ -125,22 +137,22 @@
                                 <td class="text-end"><%= typeof formatCurrency !== 'undefined' ? formatCurrency(sim.monthlyRent, locale, currency) : '€' + sim.monthlyRent.toLocaleString(locale || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></td>
                                 <td class="text-end"><%= typeof formatCurrency !== 'undefined' ? formatCurrency(sim.annualFee, locale, currency) : '€' + sim.annualFee.toLocaleString(locale || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></td>
                                 <td class="text-end">
-                                    <span class="badge bg-success">
+                                    <span class="badge bg-primary">
                                         <%= sim.results[0] ? sim.results[0].roi.toFixed(2) + '%' : 'N/A' %>
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <span class="badge bg-info">
+                                    <span class="badge bg-secondary">
                                         <%= sim.results[1] ? sim.results[1].roi.toFixed(2) + '%' : 'N/A' %>
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <span class="badge bg-primary">
+                                    <span class="badge bg-dark">
                                         <%= sim.results[2] ? sim.results[2].roi.toFixed(2) + '%' : 'N/A' %>
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="/admin/simulations/<%= sim._id %>" class="btn btn-sm btn-outline-primary">
+                                    <a href="/admin/simulations/<%= sim._id %>" class="btn btn-sm btn-outline-primary text-nowrap">
                                         View Details
                                     </a>
                                 </td>

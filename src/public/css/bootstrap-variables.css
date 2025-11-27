@@ -1,0 +1,44 @@
+/* Bootstrap 5 Theme Customization */
+/* Override Bootstrap's CSS variables to match Emerald Stay brand */
+
+:root,
+[data-bs-theme="light"] {
+    /* Primary - Emerald green */
+    --bs-primary: #00a062;
+    --bs-primary-rgb: 0, 160, 98;
+    --bs-primary-bg-subtle: #d1fae5;
+    --bs-primary-border-subtle: #00a062;
+    --bs-primary-text-emphasis: #006040;
+
+    /* Success - same green for consistency */
+    --bs-success: #00a062;
+    --bs-success-rgb: 0, 160, 98;
+    --bs-success-bg-subtle: #d1fae5;
+    --bs-success-border-subtle: #00a062;
+    --bs-success-text-emphasis: #006040;
+
+    /* Secondary / Dark tones */
+    --bs-secondary: #008050;
+    --bs-secondary-rgb: 0, 128, 80;
+
+    --bs-dark: #006040;
+    --bs-dark-rgb: 0, 96, 64;
+
+    /* Light background */
+    --bs-light: #d1fae5;
+    --bs-light-rgb: 209, 250, 229;
+
+    /* Body colors */
+    --bs-body-color: #212529;
+    --bs-body-bg: #ffffff;
+    --bs-body-color-rgb: 33, 37, 41;
+    --bs-body-bg-rgb: 255, 255, 255;
+
+    /* Secondary text */
+    --bs-secondary-color: #6b7280;
+    --bs-secondary-color-rgb: 107, 114, 128;
+
+    /* Borders */
+    --bs-border-color: #e5e7eb;
+    --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
+}

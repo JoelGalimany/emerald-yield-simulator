@@ -1,18 +1,45 @@
-<div class="container py-5">
-    <header class="mb-4">
-        <h1 class="h3 mb-3">Simulation Results</h1>
-        <div class="alert alert-info">
-            <strong>Email:</strong> <%= simulation.email %><br>
-            <strong>Purchase Price:</strong> €<%= simulation.purchasePrice.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %><br>
-            <strong>Monthly Rent:</strong> €<%= simulation.monthlyRent.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %><br>
-            <strong>Annual Fee:</strong> €<%= simulation.annualFee.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-        </div>
-    </header>
+<div class="hero-section">
+    <div class="container">
+        <header class="text-center mb-4">
+            <h1 class="hero-title">Simulation Results</h1>
+        </header>
+    </div>
+</div>
 
+<div class="container py-5">
     <main>
-        <h2 class="h4 mb-4">Return Analysis (First 3 Years)</h2>
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h2 class="mb-0">Property Information</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong class="text-muted d-block mb-1">Email</strong>
+                        <span><%= simulation.email %></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong class="text-muted d-block mb-1">Purchase Price</strong>
+                        <span><%= typeof formatCurrency !== 'undefined' ? formatCurrency(simulation.purchasePrice, locale, currency) : '€' + simulation.purchasePrice.toLocaleString(locale || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong class="text-muted d-block mb-1">Monthly Rent</strong>
+                        <span><%= typeof formatCurrency !== 'undefined' ? formatCurrency(simulation.monthlyRent, locale, currency) : '€' + simulation.monthlyRent.toLocaleString(locale || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong class="text-muted d-block mb-1">Annual Fee</strong>
+                        <span><%= typeof formatCurrency !== 'undefined' ? formatCurrency(simulation.annualFee, locale, currency) : '€' + simulation.annualFee.toLocaleString(locale || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>Return Analysis (First 3 Years)</h2>
+            <p>Detailed breakdown of net income and ROI for each year</p>
+        </div>
         
-        <% if (simulation.hasNegativeIncome) { %>
+        <% if (hasNegativeIncome) { %>
         <div class="alert alert-warning" role="alert">
             <strong>Warning:</strong> This simulation shows negative net income in some years. This may occur in real-world scenarios such as property renovations, high maintenance costs, or long-term investment strategies. Please review the values carefully.
         </div>
@@ -25,28 +52,28 @@
             %>
             <div class="col-md-4">
                 <div class="card h-100 <%= isNegative ? 'border-warning' : '' %>">
-                    <div class="card-header <%= isNegative ? 'bg-warning text-dark' : 'bg-success text-white' %>">
+                    <div class="card-header <%= isNegative ? 'bg-warning text-dark' : 'bg-primary text-white' %>">
                         <h5 class="card-title mb-0">Year <%= result.year %></h5>
                     </div>
                     <div class="card-body">
-                        <p class="card-text">
-                            <strong>Net Monthly Income:</strong><br>
-                            <span class="h5 <%= result.netMonthly < 0 ? 'text-danger' : 'text-success' %>">
-                                €<%= result.netMonthly.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                        <div class="mb-3">
+                            <strong class="text-muted d-block mb-1 small">Net Monthly Income</strong>
+                            <span class="<%= result.netMonthly < 0 ? 'text-danger' : '' %>">
+                                <%= typeof formatCurrency !== 'undefined' ? formatCurrency(result.netMonthly, locale, currency) : '€' + result.netMonthly.toLocaleString(locale || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                             </span>
-                        </p>
-                        <p class="card-text">
-                            <strong>Annual Net Income:</strong><br>
-                            <span class="h5 <%= result.annualNet < 0 ? 'text-danger' : '' %>">
-                                €<%= result.annualNet.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                        </div>
+                        <div class="mb-3">
+                            <strong class="text-muted d-block mb-1 small">Annual Net Income</strong>
+                            <span class="<%= result.annualNet < 0 ? 'text-danger' : '' %>">
+                                <%= typeof formatCurrency !== 'undefined' ? formatCurrency(result.annualNet, locale, currency) : '€' + result.annualNet.toLocaleString(locale || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
                             </span>
-                        </p>
-                        <p class="card-text">
-                            <strong>Return on Investment (ROI):</strong><br>
-                            <span class="h5 <%= isNegativeROI ? 'text-danger' : 'text-primary' %>">
-                                <%= result.roi.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>%
+                        </div>
+                        <div>
+                            <strong class="text-muted d-block mb-1 small">Return on Investment (ROI)</strong>
+                            <span class="<%= isNegativeROI ? 'text-danger' : '' %>">
+                                <%= typeof formatNumber !== 'undefined' ? formatNumber(result.roi, locale) : result.roi.toLocaleString(locale || 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>%
                             </span>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
