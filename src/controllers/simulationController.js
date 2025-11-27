@@ -1,6 +1,7 @@
 const { body, validationResult, matchedData } = require('express-validator');
 const Simulation = require('../models/Simulation');
 const { returnOverYears } = require('../services/calc');
+const { predictReturnOverYears, getDatasetStats } = require('../services/prediction');
 
 /**
  * Validation of the form fields
@@ -112,6 +113,15 @@ async function showResults(req, res) {
 
         const hasNegativeIncome = simulation.results.some(r => r.netMonthly < 0 || r.annualNet < 0);
 
+        const predictions = await predictReturnOverYears(
+            simulation.purchasePrice,
+            simulation.monthlyRent,
+            simulation.annualFee,
+            3
+        );
+        
+        const datasetStats = await getDatasetStats();
+
         res.render('results', {
             title: 'Simulation Results',
             simulation: {
@@ -121,6 +131,8 @@ async function showResults(req, res) {
                 email: simulation.email,
                 results: simulation.results
             },
+            predictions: predictions,
+            datasetStats: datasetStats,
             hasNegativeIncome
         });
     } catch (error) {

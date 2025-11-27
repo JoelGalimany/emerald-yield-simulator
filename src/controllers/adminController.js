@@ -1,5 +1,6 @@
 const Simulation = require('../models/Simulation');
 const { PAGINATION } = require('../config/constants');
+const { predictReturnOverYears, getDatasetStats } = require('../services/prediction');
 
 const { DEFAULT_PAGE, DEFAULT_LIMIT } = PAGINATION;
 
@@ -100,9 +101,23 @@ async function getSimulation(req, res) {
             });
         }
 
+        // Calculate data-driven predictions (same as results page)
+        const predictions = await predictReturnOverYears(
+            simulation.purchasePrice,
+            simulation.monthlyRent,
+            simulation.annualFee,
+            3
+        );
+        
+        const datasetStats = await getDatasetStats();
+        const hasNegativeIncome = simulation.results.some(r => r.netMonthly < 0 || r.annualNet < 0);
+
         res.render('admin/simulation-detail', {
             title: `Simulation Details - ${simulation.email}`,
-            simulation: simulation
+            simulation: simulation,
+            predictions: predictions,
+            datasetStats: datasetStats,
+            hasNegativeIncome: hasNegativeIncome
         });
     } catch (error) {
         console.error('Error getting simulation:', error);

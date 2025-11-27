@@ -2,6 +2,7 @@ require('dotenv').config();
 const http = require('http');
 const app = require('./app');
 const mongoose = require('mongoose');
+const { initializeDataset } = require('./services/prediction');
 
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/emerald';
@@ -13,8 +14,13 @@ const mongoOptions = {
 };
 
 mongoose.connect(MONGO_URI, mongoOptions)
-    .then(() => {
+    .then(async () => {
         console.log(`✓ MongoDB connected successfully to ${MONGO_URI.replace(/\/\/.*@/, '//***@')}`);
+        
+        // Initialize dataset in background
+        initializeDataset().catch(err => {
+            console.error('Dataset initialization failed:', err.message);
+        });
     })
     .catch((error) => {
         console.error('✗ MongoDB connection error:', error.message);
