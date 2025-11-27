@@ -61,19 +61,7 @@ async function processSimulation(req, res) {
 
         await simulation.save();
 
-        const hasNegativeIncome = results.some(r => r.netMonthly < 0 || r.annualNet < 0);
-
-        res.render('results', {
-            title: 'Simulation Results',
-            simulation: {
-                purchasePrice,
-                monthlyRent,
-                annualFee,
-                email: email.trim(),
-                results,
-                hasNegativeIncome
-            }
-        });
+        return res.redirect(`/results/${simulation._id}`);
     } catch (error) {
         console.error('Error processing simulation:', error);
         
@@ -97,8 +85,56 @@ async function processSimulation(req, res) {
     }
 }
 
+/**
+ * Displays simulation results by ID
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+async function showResults(req, res) {
+    try {
+        const { id } = req.params;
+
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(404).render('404', {
+                title: 'Simulation Not Found',
+                error: 'Invalid simulation ID'
+            });
+        }
+
+        const simulation = await Simulation.findById(id).lean();
+
+        if (!simulation) {
+            return res.status(404).render('404', {
+                title: 'Simulation Not Found',
+                error: 'The requested simulation could not be found'
+            });
+        }
+
+        const hasNegativeIncome = simulation.results.some(r => r.netMonthly < 0 || r.annualNet < 0);
+
+        res.render('results', {
+            title: 'Simulation Results',
+            simulation: {
+                purchasePrice: simulation.purchasePrice,
+                monthlyRent: simulation.monthlyRent,
+                annualFee: simulation.annualFee,
+                email: simulation.email,
+                results: simulation.results
+            },
+            hasNegativeIncome
+        });
+    } catch (error) {
+        console.error('Error fetching simulation:', error);
+        res.status(500).render('index', {
+            title: 'Emerald Yield Simulator',
+            error: 'An error occurred while loading the simulation results. Please try again.'
+        });
+    }
+}
+
 module.exports = {
     validateSimulation,
-    processSimulation
+    processSimulation,
+    showResults
 };
 
