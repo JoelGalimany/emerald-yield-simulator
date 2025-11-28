@@ -23,7 +23,7 @@ A comprehensive net yield and rental return simulator for property investment an
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/JoelGalimany/emerald-yield-simulator.git
    cd emerald-yield-simulator
    ```
 
@@ -178,7 +178,7 @@ docker-compose down -v
 
 ### MongoDB Access
 
-- **From Host**: `mongodb://localhost:27018/emerald`
+- **From Host**: `mongodb://localhost:27017/emerald`
 - **From Container**: `mongodb://mongo:27017/emerald`
 
 ## 🔒 Security Features
@@ -225,7 +225,7 @@ docker-compose down -v
 ### MongoDB Connection Issues
 
 - Verify MongoDB container is running: `docker-compose ps`
-- Check MongoDB port mapping (default: 27018)
+- Check MongoDB port mapping (default: 27017)
 - Verify `MONGO_URI` in environment variables
 
 ### Port Already in Use
@@ -245,4 +245,4 @@ ISC
 
 ## 👤 Contact
 
-For questions or issues, please contact: gregory@eterniti.com
+For questions or issues, please contact: joel.galimany.13@gmail.com
