@@ -92,8 +92,7 @@ table {
     table-layout: auto;
 }
 
-/* Containers should never exceed viewport */
-.container,
+/* Container-fluid should never exceed viewport (container respects Bootstrap max-widths) */
 .container-fluid {
     width: 100%;
     max-width: 100%;
@@ -462,9 +461,11 @@ input:invalid:not(:placeholder-shown)~.invalid-feedback {
         white-space: nowrap;
     }
 
+    /* Ensure container doesn't exceed viewport on mobile */
     .container {
         padding-left: 1rem;
         padding-right: 1rem;
+        max-width: 100%;
     }
 
     .hero-title {
