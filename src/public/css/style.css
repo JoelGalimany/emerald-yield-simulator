@@ -35,9 +35,27 @@
 
     --bg-light: #f9fafb;
     --border-color: var(--bs-border-color);
+
+    /* Breakpoints for consistency */
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
 }
 
 /* Global */
+
+/* Prevent horizontal overflow - Applied at root level */
+html {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* Box-sizing reset - Bootstrap already does this, but being explicit */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Acumin', Arial, sans-serif;
@@ -51,6 +69,34 @@ body {
     font-style: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* Prevent horizontal overflow for media elements */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+video,
+iframe,
+embed,
+object {
+    max-width: 100%;
+}
+
+/* Ensure tables respect container width */
+table {
+    width: 100%;
+    table-layout: auto;
+}
+
+/* Containers should never exceed viewport */
+.container,
+.container-fluid {
+    width: 100%;
+    max-width: 100%;
 }
 
 h1,
@@ -76,6 +122,8 @@ h6,
     background-color: #ffffff !important;
     box-shadow: var(--shadow-sm);
     padding: var(--spacing-sm) 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 .navbar-brand {
@@ -85,6 +133,10 @@ h6,
     letter-spacing: -0.02em;
     text-decoration: none;
     transition: color 0.2s ease;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
 }
 
 .navbar-brand:hover {
@@ -105,6 +157,7 @@ h6,
     font-size: 15px;
     line-height: 20px;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -144,6 +197,8 @@ h6,
     transition: all 0.2s ease;
     font-size: 1rem;
     line-height: 1.5;
+    width: 100%;
+    max-width: 100%;
 }
 
 .form-control:focus {
@@ -396,10 +451,10 @@ input:invalid:not(:placeholder-shown)~.invalid-feedback {
     display: block;
 }
 
-/* Responsive */
+/* Responsive Design */
 
+/* Tablet and below */
 @media (max-width: 768px) {
-
     .simulations-table thead th:first-child,
     .simulations-table tbody td:first-child {
         min-width: 120px;
@@ -426,14 +481,23 @@ input:invalid:not(:placeholder-shown)~.invalid-feedback {
 
     .table-responsive {
         font-size: 0.875rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        /* Smooth scrolling on iOS */
+        scrollbar-width: thin;
     }
 
     .btn-lg {
         padding: 0.625rem 1.5rem;
         font-size: 1rem;
     }
+
+    .navbar-brand {
+        font-size: 1.75rem;
+    }
 }
 
+/* Mobile */
 @media (max-width: 576px) {
     .hero-section {
         padding: var(--spacing-lg) 0;
@@ -446,5 +510,31 @@ input:invalid:not(:placeholder-shown)~.invalid-feedback {
 
     .card-body {
         padding: 1rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    /* Ensure table-responsive works properly on small screens */
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Prevent form elements from overflowing */
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    textarea,
+    select {
+        max-width: 100%;
     }
 }
