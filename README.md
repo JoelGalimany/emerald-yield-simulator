@@ -35,7 +35,7 @@ A comprehensive net yield and rental return simulator for property investment an
 3. **Access the application**
    - Main application: http://localhost:3000
    - Admin panel: http://localhost:3000/admin/simulations
-   - MongoDB: localhost:27018 (if connecting externally)
+   - MongoDB: localhost:27017 (if connecting externally)
 
 ### Manual Installation
 
